@@ -1,0 +1,62 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+bestand = open("earthquakes.txt")
+read_file = bestand.read()
+lijst_data = np.array(read_file.split('\n'))
+
+data_1965, data_1966, data_1967, data_1968, data_1969, data_1970 = [], [], [], [], [], []
+
+for line in lijst_data:
+    data = line.split(',')
+    datum= data[0].split('/')
+    magnitude = float(data[-1])
+    year, month = datum[-1], datum[0]
+    if year == "65":
+        data_1965.append([int(datum[0]), float(data[-1])])
+    elif year == "66":
+        data_1966.append([int(month), float(data[-1])])
+    elif year == "67":
+        data_1967.append([int(month), float(data[-1])])
+    elif year == "68":
+        data_1968.append([int(month), float(data[-1])])
+    elif year == "69":
+        data_1969.append([int(month), float(data[-1])])
+    elif year == "70":
+        data_1970.append([int(month), float(data[-1])])
+
+def calculate_average(data_year):
+    magn_total = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    count_per_month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    list_of_averages = []
+    count, loop, i = 1, 0, 0
+    while loop < len(magn_total):
+        for line in data_year:
+            if line[0] == count:
+                magn_total[loop] += line[1]
+                count_per_month[loop] += 1
+        loop += 1
+        count += 1
+    while i < len(magn_total):
+        average = magn_total[i]/count_per_month[i]
+        list_of_averages.append(round(average, 3))
+        i += 1
+    return list_of_averages
+
+average_years = [averages_1965, averages_1966, averages_1967, averages_1968, averages_1969, averages_1970] = [np.array(calculate_average(data_1965)),np.array(calculate_average(data_1966)) , np.array(calculate_average(data_1967)), np.array(calculate_average(data_1968)), np.array(calculate_average(data_1969)), np.array(calculate_average(data_1970))]
+
+def subplot_is(average_year):
+    i, yo = 0, 0
+    months = np.array(['\njan','feb', '\nmar', 'apr', '\nmay', 'jun', '\njul', 'aug', '\nsep', 'okt', '\nnov', 'dec'])
+    while i < 6:
+        yo += 1
+        average_year = average_years[i]
+        een = plt.subplot(3,2,yo)
+        twee = plt.plot(months, average_year, "r-")
+        drie = plt.title("\n" +str(1965+i))
+        i += 1
+    plt.suptitle("A plot of the average magnitude in year x")
+    plt.show()
+    return een, twee, drie
+
+subplot_is(average_years)
